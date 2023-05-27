@@ -11,7 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PharmacyService {
   final pool = MySQLConnectionPool(
-    host: '167.12.1.6',
+    host: '167.172.143.106',
     port: 3306,
     userName: 'pharma_express_user',
     password: 'qja8bw7p5kwuy5ppmeek',

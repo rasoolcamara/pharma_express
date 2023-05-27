@@ -1,4 +1,4 @@
-package com.example.pharma_express;
+package com.rasool.pharmaexpress;
 
 import io.flutter.embedding.android.FlutterActivity;
 

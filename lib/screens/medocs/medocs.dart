@@ -419,7 +419,7 @@ class _MedocsListPageState extends State<MedocsListPage> {
                       ),
                       Container(
                         height: ScreenUtil().setHeight(20),
-                        width: ScreenUtil().setWidth(220),
+                        width: ScreenUtil().setWidth(210),
                         child: Text(
                           medoc.name,
                           style: TextStyle(
@@ -463,9 +463,9 @@ class _MedocsListPageState extends State<MedocsListPage> {
 
                       // Status
                       Container(
-                        width: ScreenUtil().setWidth(220),
+                        width: ScreenUtil().setWidth(210),
                         child: Text(
-                          medoc.description.substring(0, 60) + "...",
+                          medoc.description.substring(0, 55) + "...",
                           style: const TextStyle(
                             fontSize: 13.0,
                             color: black,

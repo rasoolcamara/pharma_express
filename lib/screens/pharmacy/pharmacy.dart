@@ -333,7 +333,7 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
                       ),
                       Container(
                         height: ScreenUtil().setHeight(20),
-                        width: ScreenUtil().setWidth(220),
+                        width: ScreenUtil().setWidth(210),
                         child: Text(
                           pharmacy.name,
                           style: TextStyle(

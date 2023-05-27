@@ -12,7 +12,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MedocService {
   final pool = MySQLConnectionPool(
-    host: '17.1.3.106',
+    host: '167.172.143.106',
     port: 3306,
     userName: 'pharma_express_user',
     password: 'qja8bw7p5kwuy5ppmeek',

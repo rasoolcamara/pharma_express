@@ -91,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                   BottomBarItem(
                     inActiveItem: SvgPicture.asset(
                       'assets/search_icon.svg',
-                      color: Colors.blueGrey,
+                      color: Colors.green.shade900,
                     ),
                     activeItem: SvgPicture.asset(
                       'assets/search_icon.svg',
