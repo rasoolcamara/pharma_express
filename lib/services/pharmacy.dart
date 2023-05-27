@@ -11,13 +11,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class PharmacyService {
   final pool = MySQLConnectionPool(
-    host: '46.10...',
-    port: 5432,
+    host: '167.12.1.6',
+    port: 3306,
     userName: 'pharma_express_user',
-    password: 'qxr22k6xf1k2p6j',
+    password: 'qja8bw7p5kwuy5ppmeek',
     maxConnections: 10,
     databaseName: 'pharma_express',
   );
+  // mysql+ssh://forge@167.172.143.106/forge@127.0.0.1/forge?name=beautiful-stream&usePrivateKey=true
 
   Future<List<Pharmacy>> getPharmacies(
     String query, {

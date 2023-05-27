@@ -12,13 +12,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class MedocService {
   final pool = MySQLConnectionPool(
-    host: '46.10...',
-    port: 5432,
+    host: '17.1.3.106',
+    port: 3306,
     userName: 'pharma_express_user',
-    password: 'qxr22k6xf1k2p6j',
+    password: 'qja8bw7p5kwuy5ppmeek',
     maxConnections: 10,
     databaseName: 'pharma_express',
   );
+
   Future<List<Medoc>> getMedocs(
     String query, {
     Map<String, dynamic> params,
