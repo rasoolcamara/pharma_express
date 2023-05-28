@@ -3,6 +3,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -12,7 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class SettingPage extends StatefulWidget {
   SettingPage({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -38,7 +39,6 @@ class _SettingPageState extends State<SettingPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        brightness: Brightness.dark,
         iconTheme: IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: Colors.green.shade800,
@@ -51,6 +51,7 @@ class _SettingPageState extends State<SettingPage> {
           ),
         ),
         elevation: 0.0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: _loading
           ? spinkit

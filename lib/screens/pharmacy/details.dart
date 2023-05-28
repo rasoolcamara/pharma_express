@@ -16,8 +16,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class PharmacyDetailsPage extends StatefulWidget {
   PharmacyDetailsPage({
-    Key key,
-    this.pharmacy,
+    Key? key,
+    required this.pharmacy,
   }) : super(key: key);
   Pharmacy pharmacy;
 
@@ -35,14 +35,14 @@ class _PharmacyDetailsPageState extends State<PharmacyDetailsPage> {
 
   bool _loading = false;
 
-  bool imageAccepted;
-  String _mapStyle;
+  late bool imageAccepted;
+  late String _mapStyle;
 
-  String selectedImage;
-  String selectedImageExtension;
+  late String selectedImage;
+  late String selectedImageExtension;
   final Set<Marker> _markers = {};
   LatLng _currentPosition = LatLng(14.752238781984246, -17.461802067387016);
-  GoogleMapController _controller;
+  late GoogleMapController _controller;
   final LatLng _center = const LatLng(14.752238781984246, -17.461802067387016);
 
   void _onMapCreated(GoogleMapController controller) {
@@ -115,12 +115,11 @@ class _PharmacyDetailsPageState extends State<PharmacyDetailsPage> {
     );
     return GestureDetector(
       onTap: () {
-        FocusManager.instance.primaryFocus.unfocus();
+        FocusManager.instance.primaryFocus!.unfocus();
       },
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          brightness: Brightness.dark,
           iconTheme: const IconThemeData(color: Colors.white),
           centerTitle: true,
           backgroundColor: Colors.green.shade900,
@@ -133,6 +132,7 @@ class _PharmacyDetailsPageState extends State<PharmacyDetailsPage> {
             ),
           ),
           elevation: 0.0,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
         ),
         body: _loading
             ? spinkit

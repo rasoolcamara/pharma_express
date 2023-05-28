@@ -22,7 +22,7 @@ class MedocService {
 
   Future<List<Medoc>> getMedocs(
     String query, {
-    Map<String, dynamic> params,
+    Map<String, dynamic>? params,
   }) async {
     try {
       var result = await pool.execute(
@@ -33,14 +33,14 @@ class MedocService {
 
       for (final row in result.rows) {
         var json = row.assoc();
-        print(num.parse(json['id']));
+        print(num.parse(json['id']!));
         print(json['name']);
         print(json['serie_number']);
         print(json['location']);
         print(json['description']);
 
         medocs.add(Medoc(
-          id: num.parse(json['id']),
+          id: int.parse(json['id']!),
           name: json['name'] as String,
           number: json['serie_number'] as String,
           description: json['description'] as String,
@@ -55,12 +55,13 @@ class MedocService {
     } catch (e) {
       print("errorrrr");
       print(e);
+      return [];
     }
   }
 
   Future<List<Pharmacy>> getPharmacies(
     int id, {
-    Map<String, dynamic> params,
+    Map<String, dynamic>? params,
   }) async {
     var result = await pool.execute(
         "SELECT * FROM pharmacy_medicaments WHERE medicament_id = :id",
@@ -71,26 +72,26 @@ class MedocService {
       var data = row.assoc();
 
       var pharms = await pool.execute("SELECT * FROM pharmacies WHERE id = :id",
-          {"id": num.parse(data['pharmacie_id'])});
+          {"id": num.parse(data['pharmacie_id']!)});
       for (final roww in pharms.rows) {
         var json = roww.assoc();
-        print(num.parse(json['id']));
+        print(num.parse(json['id']!));
         print(json['name']);
         print(json['phone']);
         print(json['location']);
         print(json['description']);
 
         pharmacys.add(Pharmacy(
-          id: num.parse(json['id']),
-          name: json['name'],
-          phone: json['phone'],
-          location: json['location'],
-          description: json['description'],
-          avatar: json['avatar'],
-          status: json['status'],
-          // images: json['images'] as List<String>,
-          latitude: json['latitude'] as num,
-          longitude: json['longitude'] as num,
+          id: int.parse(json['id']!),
+          name: json['name'] as String,
+          phone: json['phone'] as String,
+          location: json['location'] as String,
+          description: json['description'] as String,
+          avatar: json['avatar'] as String,
+          status: json['status'] as String,
+          images: [], // json['images'] as List<String>,
+          latitude: num.parse(json['latitude']!),
+          longitude: num.parse(json['longitude']!),
         ));
       }
     }

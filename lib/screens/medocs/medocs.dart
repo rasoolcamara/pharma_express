@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pharma_express/models/medocs.dart';
 import 'package:pharma_express/models/pharmacy.dart';
 import 'package:pharma_express/properties/app_properties.dart';
+import 'package:pharma_express/screens/pharmacy/details.dart';
 import 'package:pharma_express/services/medoc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -11,7 +13,7 @@ import 'package:http/http.dart' as http;
 
 class MedocsListPage extends StatefulWidget {
   MedocsListPage({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -40,15 +42,11 @@ class _MedocsListPageState extends State<MedocsListPage> {
   List<Medoc> _medocsSeachingList = [];
   bool _searching = false;
 
-  Future<void> _initMedocData;
+  late Future<void> _initMedocData;
 
   void initState() {
     super.initState();
     _initMedocData = _initMedocs();
-
-    Future<String> _token = _prefs.then((SharedPreferences prefs) {
-      return prefs.getString("activeToken");
-    });
   }
 
   @override
@@ -56,7 +54,6 @@ class _MedocsListPageState extends State<MedocsListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        brightness: Brightness.dark,
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: Colors.green.shade800,
@@ -69,6 +66,7 @@ class _MedocsListPageState extends State<MedocsListPage> {
           ),
         ),
         elevation: 0.0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: FutureBuilder(
         future: _initMedocData,
@@ -108,10 +106,15 @@ class _MedocsListPageState extends State<MedocsListPage> {
                                               : _medocsSeachingList.length,
                                           itemBuilder: (BuildContext context,
                                               int index) {
-                                            Medoc medoc = _searching == false
-                                                ? _medocList[index]
-                                                : _medocsSeachingList[index];
-                                            return _buildList(medoc, context);
+                                            if (_searching == false) {
+                                              Medoc medoc = _medocList[index];
+                                              return _buildList(medoc, context);
+                                            } else {
+                                              Pharmacy pharmacy =
+                                                  _pharmacyList[index];
+                                              return _pharmacyBuildList(
+                                                  pharmacy, context);
+                                            }
                                           },
                                         ),
                                       )
@@ -179,28 +182,52 @@ class _MedocsListPageState extends State<MedocsListPage> {
                 controller: _searchController,
                 onChanged: (value) {
                   print(value);
-                  setState(() {
-                    if (value.length > 1) {
-                      _searching = true;
+                  // setState(() {
+                  //   if (value.length > 1) {
+                  //     _searching = true;
 
-                      var list = _medocList
-                          .where((Medoc Medoc) => (Medoc.name
-                              .toLowerCase()
-                              .contains(value.toLowerCase())))
-                          .toList();
+                  //     var list = _medocList
+                  //         .where((Medoc Medoc) => (Medoc.name
+                  //             .toLowerCase()
+                  //             .contains(value.toLowerCase())))
+                  //         .toList();
 
-                      _medocsSeachingList = list;
-                    } else {
-                      _searching = false;
-                    }
-                  });
+                  //     _medocsSeachingList = list;
+                  //   } else {
+                  //     _searching = false;
+                  //   }
+                  // });
                 },
-                onFieldSubmitted: (value) => {
+                onFieldSubmitted: (value) async {
                   setState(() {
-                    _searchController.clear();
-                    _searching = false;
-                    _medocsSeachingList = [];
-                  })
+                    _searching = true;
+                    _loader = true;
+
+                    var list = _medocList
+                        .where((Medoc Medoc) => (Medoc.name
+                            .toLowerCase()
+                            .contains(value.toLowerCase())))
+                        .toList();
+
+                    _medocsSeachingList = list;
+                  });
+                  if (_medocsSeachingList.isNotEmpty) {
+                    _pharmacyList = await MedocService()
+                        .getPharmacies(_medocsSeachingList.first.id);
+                    setState(() {
+                      _loader = false;
+                    });
+                  } else {
+                    setState(() {
+                      _loader = false;
+                      _searching = false;
+                    });
+                  }
+                  // setState(() {
+                  //   _searchController.clear();
+                  //   _searching = false;
+                  //   _medocsSeachingList = [];
+                  // })
                 },
                 style: const TextStyle(
                   color: Colors.black,
@@ -530,6 +557,195 @@ class _MedocsListPageState extends State<MedocsListPage> {
             fontSize: ScreenUtil().setSp(10),
             fontWeight: FontWeight.w500,
             color: Colors.black,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _pharmacyBuildList(Pharmacy pharmacy, context) {
+    return Padding(
+      padding:
+          const EdgeInsets.only(top: 5.0, bottom: 5.0, left: 8.0, right: 8.0),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(
+            PageRouteBuilder(
+              pageBuilder: (_, __, ___) => PharmacyDetailsPage(
+                pharmacy: pharmacy,
+              ),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(10.0),
+              ),
+              color: green.withOpacity(0.05),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Container(
+                  height: 130.0,
+                  width: 90.0,
+                  decoration: const BoxDecoration(
+                    color: green,
+                    image: DecorationImage(
+                      opacity: 0.95,
+                      image: AssetImage(
+                        "assets/images/logo/appstore.png",
+                      ),
+                      fit: BoxFit.fill,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        blurRadius: 0.0,
+                        color: Colors.black87,
+                      )
+                    ],
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10.0),
+                    ),
+                    gradient: LinearGradient(
+                      colors: [
+                        Color(0xFF1E2026),
+                        Color(0xFF23252E),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 5.0,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      Container(
+                        height: ScreenUtil().setHeight(20),
+                        width: ScreenUtil().setWidth(210),
+                        child: Text(
+                          pharmacy.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: ScreenUtil().setSp(11),
+                            letterSpacing: 1.0,
+                            color: Colors.green.shade900,
+                          ),
+                          maxLines: 2,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      // Localisation
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.phone,
+                            size: 16.0,
+                            color: Colors.green.shade900,
+                          ),
+                          const SizedBox(
+                            width: 8.0,
+                          ),
+                          Text(
+                            pharmacy.phone,
+                            style: const TextStyle(
+                              fontSize: 13.0,
+                              color: black,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      // Nombres invités
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.location_on_sharp,
+                            size: 16.0,
+                            color: Colors.green.shade900,
+                          ),
+                          const SizedBox(
+                            width: 8.0,
+                          ),
+                          pharmacy.location.length > 30
+                              ? Container(
+                                  height: ScreenUtil().setHeight(25),
+                                  width: ScreenUtil().setWidth(200),
+                                  child: Center(
+                                    child: Text(
+                                      pharmacy.location,
+                                      style: TextStyle(
+                                        fontSize: ScreenUtil().setSp(11),
+                                        color: black,
+                                      ),
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  pharmacy.location,
+                                  style: TextStyle(
+                                    fontSize: ScreenUtil().setSp(11),
+                                    color: black,
+                                  ),
+                                  maxLines: 2,
+                                ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      // Status
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Icons.circle,
+                            size: 12.0,
+                            color: pharmacy.status == 'open' ? green : orange,
+                          ),
+                          const SizedBox(
+                            width: 8.0,
+                          ),
+                          Text(
+                            pharmacy.status == 'open' ? "Ouvert" : "Fermé",
+                            style: TextStyle(
+                              fontSize: 13.0,
+                              color: pharmacy.status == 'open' ? green : orange,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

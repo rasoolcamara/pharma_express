@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pharma_express/models/pharmacy.dart';
 import 'package:pharma_express/properties/app_properties.dart';
@@ -11,7 +12,7 @@ import 'package:http/http.dart' as http;
 
 class PharmacyListPage extends StatefulWidget {
   PharmacyListPage({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -39,15 +40,11 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
   List<Pharmacy> _pharmacysSeachingList = [];
   bool _searching = false;
 
-  Future<void> _initPharmacyData;
+  late Future<void> _initPharmacyData;
 
   void initState() {
     super.initState();
     _initPharmacyData = _initPharmacys();
-
-    Future<String> _token = _prefs.then((SharedPreferences prefs) {
-      return prefs.getString("activeToken");
-    });
   }
 
   @override
@@ -55,7 +52,6 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        brightness: Brightness.dark,
         iconTheme: const IconThemeData(color: Colors.white),
         centerTitle: true,
         backgroundColor: Colors.green.shade800,
@@ -68,6 +64,7 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
           ),
         ),
         elevation: 0.0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
       ),
       body: FutureBuilder(
         future: _initPharmacyData,

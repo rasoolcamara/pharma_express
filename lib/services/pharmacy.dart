@@ -22,7 +22,7 @@ class PharmacyService {
 
   Future<List<Pharmacy>> getPharmacies(
     String query, {
-    Map<String, dynamic> params,
+    Map<String, dynamic>? params,
   }) async {
     var result = await pool.execute(
       query,
@@ -32,23 +32,23 @@ class PharmacyService {
 
     for (final row in result.rows) {
       var json = row.assoc();
-      print(num.parse(json['id']));
+
       print(json['name']);
       print(json['phone']);
       print(json['location']);
       print(json['description']);
 
       pharmacys.add(Pharmacy(
-        id: num.parse(json['id']),
-        name: json['name'],
-        phone: json['phone'],
-        location: json['location'],
-        description: json['description'],
-        avatar: json['avatar'],
-        status: json['status'],
-        // images: json['images'] as List<String>,
-        latitude: json['latitude'] as num,
-        longitude: json['longitude'] as num,
+        id: int.parse(json['id']!),
+        name: json['name'] as String,
+        phone: json['phone'] as String,
+        location: json['location'] as String,
+        description: json['description'] as String,
+        avatar: json['avatar'] as String,
+        status: json['status'] as String,
+        images: [], // json['images'] as List<String>,
+        latitude: num.parse(json['latitude']!),
+        longitude: num.parse(json['longitude']!),
       ));
     }
     print("pharmacys.length");

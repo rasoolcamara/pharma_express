@@ -16,7 +16,7 @@ import 'package:animated_notch_bottom_bar/animated_notch_bottom_bar/animated_not
 
 class HomePage extends StatefulWidget {
   HomePage({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -179,7 +179,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class Page1 extends StatelessWidget {
-  const Page1({Key key}) : super(key: key);
+  const Page1({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -189,7 +189,7 @@ class Page1 extends StatelessWidget {
 }
 
 class Page2 extends StatelessWidget {
-  const Page2({Key key}) : super(key: key);
+  const Page2({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +199,7 @@ class Page2 extends StatelessWidget {
 }
 
 class Page3 extends StatelessWidget {
-  const Page3({Key key}) : super(key: key);
+  const Page3({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +209,7 @@ class Page3 extends StatelessWidget {
 }
 
 class Page4 extends StatelessWidget {
-  const Page4({Key key}) : super(key: key);
+  const Page4({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -219,7 +219,7 @@ class Page4 extends StatelessWidget {
 }
 
 class Page5 extends StatelessWidget {
-  const Page5({Key key}) : super(key: key);
+  const Page5({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

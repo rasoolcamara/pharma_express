@@ -5,13 +5,12 @@ class Medoc {
   String description;
   String avatar;
 
-
   Medoc({
-    this.id,
-    this.name,
-    this.number,
-    this.description,
-    this.avatar,
+    required this.id,
+    required this.name,
+    required this.number,
+    required this.description,
+    required this.avatar,
   });
 
   factory Medoc.fromJson(Map<String, dynamic> json) {

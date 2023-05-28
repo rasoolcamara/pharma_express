@@ -11,16 +11,16 @@ class Pharmacy {
   num longitude;
 
   Pharmacy({
-    this.id,
-    this.name,
-    this.phone,
-    this.location,
-    this.description,
-    this.avatar,
-    this.images,
-    this.longitude,
-    this.latitude,
-    this.status,
+    required this.id,
+    required this.name,
+    required this.phone,
+    required this.location,
+    required this.description,
+    required this.avatar,
+    required this.images,
+    required this.longitude,
+    required this.latitude,
+    required this.status,
   });
 
   factory Pharmacy.fromJson(Map<String, dynamic> json) {
@@ -32,9 +32,9 @@ class Pharmacy {
       description: json['description'] as String,
       avatar: json['avatar'] as String,
       status: json['status'] as String,
-      // images: json['images'] as List<String>,
-      latitude: json['latitude'] as num,
-      longitude: json['longitude'] as num,
+      images: [], // json['images'] as List<String>,
+      latitude: num.parse(json['latitude']!),
+      longitude: num.parse(json['longitude']!),
     );
   }
 }
