@@ -19,10 +19,13 @@ class PharmacyListPage extends StatefulWidget {
   _PharmacyListPageState createState() => _PharmacyListPageState();
 }
 
-class _PharmacyListPageState extends State<PharmacyListPage> {
+class _PharmacyListPageState extends State<PharmacyListPage>
+    with SingleTickerProviderStateMixin {
   String status = 'all';
   TextEditingController _searchController = TextEditingController();
+  late TabController _tabController;
 
+  int _tabIndex = 0;
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   String searchString = "SELECT * FROM pharmacies";
 
@@ -38,6 +41,8 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
   var refreshkey = GlobalKey<RefreshIndicatorState>();
   List<Pharmacy> _pharmacyList = [];
   List<Pharmacy> _pharmacysSeachingList = [];
+  List<Pharmacy> _pharmacysOnGardeList = [];
+
   bool _searching = false;
 
   late Future<void> _initPharmacyData;
@@ -45,102 +50,298 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
   void initState() {
     super.initState();
     _initPharmacyData = _initPharmacys();
+    _tabController = TabController(length: 2, vsync: this);
+    _tabController.index = 0;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        centerTitle: true,
-        backgroundColor: Colors.green.shade800,
-        title: const Text(
-          "Pharmacies",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus!.unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
+          centerTitle: true,
+          backgroundColor: Colors.green.shade800,
+          title: const Text(
+            "Pharmacies",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
+          elevation: 0.0,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
         ),
-        elevation: 0.0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-      ),
-      body: FutureBuilder(
-        future: _initPharmacyData,
-        builder: (_, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return RefreshIndicator(
-              key: refreshkey,
-              backgroundColor: Colors.white,
-              color: Colors.green.shade900,
-              onRefresh: () => _refreshPharmacys(context),
-              child: _loader
-                  ? spinkit
-                  : SingleChildScrollView(
-                      physics: const ScrollPhysics(),
-                      child: Column(
-                        children: [
-                          _search(context),
-                          // color: liteGray,
-                          Stack(
-                            children: <Widget>[
-                              Container(
-                                // padding: EdgeInsets.only(top: 8),
-                                height: MediaQuery.of(context).size.height,
-                                width: double.infinity,
-                                child: (_searching == false &&
-                                            _pharmacyList.isNotEmpty) ||
-                                        (_searching == true &&
-                                            _pharmacysSeachingList.isNotEmpty)
-                                    ? Container(
-                                        padding: const EdgeInsets.only(
-                                            top: 10, bottom: 190),
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: ListView.builder(
-                                          itemCount: _searching == false
-                                              ? _pharmacyList.length
-                                              : _pharmacysSeachingList.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            Pharmacy pharmacy = _searching ==
-                                                    false
-                                                ? _pharmacyList[index]
-                                                : _pharmacysSeachingList[index];
-                                            return _buildList(
-                                                pharmacy, context);
-                                          },
-                                        ),
-                                      )
-                                    : Container(
-                                        padding: const EdgeInsets.only(
-                                            top: 10, bottom: 100),
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        // width: double.infinity,
-                                        child: const Center(
-                                          child: Text(
-                                            "Pas encore d'agent",
-                                            style: TextStyle(
-                                              fontSize: 14.0,
-                                            ),
+        body: FutureBuilder(
+          future: _initPharmacyData,
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return RefreshIndicator(
+                key: refreshkey,
+                backgroundColor: Colors.white,
+                color: Colors.green.shade900,
+                onRefresh: () => _refreshPharmacys(context),
+                child: _loader
+                    ? spinkit
+                    : SingleChildScrollView(
+                        physics: const ScrollPhysics(),
+                        child: Column(
+                          children: [
+                            _search(context),
+                            // color: liteGray,
+                            Stack(
+                              children: <Widget>[
+                                Container(
+                                    // padding: EdgeInsets.only(top: 8),
+                                    height: MediaQuery.of(context).size.height,
+                                    width: double.infinity,
+                                    child: NestedScrollView(
+                                      headerSliverBuilder: (context, value) {
+                                        return [
+                                          SliverToBoxAdapter(
+                                            child: Container(height: 1),
+                                          )
+                                        ];
+                                      },
+                                      body: DefaultTabController(
+                                        length: 2,
+                                        child: SizedBox(
+                                          height: 50,
+                                          child: Column(
+                                            children: <Widget>[
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              SizedBox(
+                                                height: 50,
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width /
+                                                    1.1,
+                                                child: PreferredSize(
+                                                  preferredSize: const Size
+                                                          .fromHeight(
+                                                      0.0), // here the desired height
+                                                  child: AppBar(
+                                                    backgroundColor: Colors
+                                                        .green
+                                                        .withOpacity(0.2),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              10),
+                                                    ),
+                                                    elevation: 0.0,
+                                                    bottom: TabBar(
+                                                      controller:
+                                                          _tabController,
+                                                      unselectedLabelColor:
+                                                          Colors.green.shade900,
+                                                      // unselectedLabelStyle:
+                                                      //     TextStyle(
+                                                      //   color:
+                                                      //       Colors.green.shade900,
+                                                      // ),
+                                                      indicatorSize:
+                                                          TabBarIndicatorSize
+                                                              .tab,
+                                                      indicatorColor:
+                                                          Colors.green.shade900,
+                                                      // labelColor: Colors.white,
+                                                      indicator: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10),
+                                                        color: Colors
+                                                            .green.shade900,
+                                                      ),
+                                                      tabs:
+                                                          List<Widget>.generate(
+                                                        2,
+                                                        (int index) {
+                                                          return Tab(
+                                                            child: Container(
+                                                              width: (MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width /
+                                                                      1.1) /
+                                                                  2.3,
+                                                              decoration:
+                                                                  const BoxDecoration(
+                                                                borderRadius:
+                                                                    BorderRadius
+                                                                        .all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          10.0),
+                                                                ),
+                                                                // color: Colors
+                                                                //     .green
+                                                                //     .shade900,
+                                                              ),
+                                                              child: Align(
+                                                                alignment:
+                                                                    Alignment
+                                                                        .center,
+                                                                child: Text(
+                                                                  index == 0
+                                                                      ? "En garde"
+                                                                      : "Tout",
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .center,
+                                                                  style:
+                                                                      const TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        11,
+                                                                    // color: Colors
+                                                                    //     .white,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          );
+                                                        },
+                                                      ),
+                                                      isScrollable: true,
+                                                      onTap: (newValue) {
+                                                        setState(
+                                                          () {
+                                                            print(newValue);
+                                                            _tabIndex =
+                                                                newValue;
+                                                          },
+                                                        );
+                                                      },
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: TabBarView(
+                                                  // controller: _controller,/
+                                                  children:
+                                                      List<Widget>.generate(
+                                                    2,
+                                                    (int ind) {
+                                                      return Container(
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                            right: 0.0,
+                                                            left: 0.0,
+                                                          ),
+                                                          child: Container(
+                                                            child: Padding(
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .only(
+                                                                top: 8.0,
+                                                                bottom: 50.0,
+                                                              ),
+                                                              child: (_searching ==
+                                                                              false &&
+                                                                          _pharmacyList
+                                                                              .isNotEmpty) ||
+                                                                      (_searching ==
+                                                                              true &&
+                                                                          _pharmacysSeachingList
+                                                                              .isNotEmpty)
+                                                                  ? Container(
+                                                                      padding: const EdgeInsets
+                                                                              .only(
+                                                                          top:
+                                                                              10,
+                                                                          bottom:
+                                                                              190),
+                                                                      height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .height,
+                                                                      child: ListView
+                                                                          .builder(
+                                                                        itemCount: _searching ==
+                                                                                false
+                                                                            ? (ind == 0 && _tabIndex == 0)
+                                                                                ? _pharmacysOnGardeList.length
+                                                                                : _pharmacyList.length
+                                                                            : _pharmacysSeachingList.length,
+                                                                        itemBuilder:
+                                                                            (BuildContext context,
+                                                                                int index) {
+                                                                          Pharmacy pharmacy = _searching == false
+                                                                              ? (ind == 0 && _tabIndex == 0)
+                                                                                  ? _pharmacysOnGardeList[index]
+                                                                                  : _pharmacyList[index]
+                                                                              : _pharmacysSeachingList[index];
+                                                                          return _buildList(
+                                                                              pharmacy,
+                                                                              context);
+                                                                        },
+                                                                      ),
+                                                                    )
+                                                                  : Container(
+                                                                      padding: const EdgeInsets
+                                                                              .only(
+                                                                          top:
+                                                                              10,
+                                                                          bottom:
+                                                                              100),
+                                                                      height: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .height,
+                                                                      // width: double.infinity,
+                                                                      child:
+                                                                          const Center(
+                                                                        child:
+                                                                            Text(
+                                                                          "Pas encore d'agent",
+                                                                          style:
+                                                                              TextStyle(
+                                                                            fontSize:
+                                                                                14.0,
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                    )),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-            );
-          } else {
-            return Center(
-              child: spinkit,
-            );
-          }
-        },
+              );
+            } else {
+              return Center(
+                child: spinkit,
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -155,7 +356,7 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
         height: 50.0,
         decoration: BoxDecoration(
           color: white,
-          borderRadius: BorderRadius.all(
+          borderRadius: const BorderRadius.all(
             Radius.circular(5.0),
           ),
           boxShadow: [
@@ -204,7 +405,7 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
                   color: Colors.black,
                 ),
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   floatingLabelBehavior: FloatingLabelBehavior.never,
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
@@ -222,7 +423,7 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
                     size: 28.0,
                   ),
                   hintText: "Rechercher",
-                  hintStyle: TextStyle(fontSize: 12.0, color: gray),
+                  hintStyle: const TextStyle(fontSize: 12.0, color: gray),
                 ),
               ),
             ),
@@ -242,6 +443,8 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
     // setState(() {
     // });
     _pharmacyList = pharmacys;
+    _pharmacysOnGardeList =
+        _pharmacyList.where((pharmacy) => pharmacy.garden == 1).toList();
   }
 
   Future<void> _refreshPharmacys(BuildContext context) async {
@@ -254,6 +457,8 @@ class _PharmacyListPageState extends State<PharmacyListPage> {
 
     setState(() {
       _pharmacyList = pharmacys;
+      _pharmacysOnGardeList =
+          _pharmacyList.where((pharmacy) => pharmacy.garden == 1).toList();
       _loader = false;
     });
   }

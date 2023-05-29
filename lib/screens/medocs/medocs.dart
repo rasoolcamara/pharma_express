@@ -51,101 +51,109 @@ class _MedocsListPageState extends State<MedocsListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        centerTitle: true,
-        backgroundColor: Colors.green.shade800,
-        title: const Text(
-          "Médicaments",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus!.unfocus();
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          iconTheme: const IconThemeData(color: Colors.white),
+          centerTitle: true,
+          backgroundColor: Colors.green.shade800,
+          title: const Text(
+            "Médicaments",
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
+            ),
           ),
+          elevation: 0.0,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
         ),
-        elevation: 0.0,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-      ),
-      body: FutureBuilder(
-        future: _initMedocData,
-        builder: (_, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return RefreshIndicator(
-              key: refreshkey,
-              backgroundColor: Colors.white,
-              color: blue10,
-              onRefresh: () => _refreshMedocs(context),
-              child: _loader
-                  ? spinkit
-                  : SingleChildScrollView(
-                      physics: const ScrollPhysics(),
-                      child: Column(
-                        children: [
-                          _search(context),
-                          // color: liteGray,
-                          Stack(
-                            children: <Widget>[
-                              Container(
-                                // padding: EdgeInsets.only(top: 8),
-                                height: MediaQuery.of(context).size.height,
-                                width: double.infinity,
-                                child: (_searching == false &&
-                                            _medocList.isNotEmpty) ||
-                                        (_searching == true &&
-                                            _medocsSeachingList.isNotEmpty)
-                                    ? Container(
-                                        padding: const EdgeInsets.only(
-                                            top: 10, bottom: 190),
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        child: ListView.builder(
-                                          itemCount: _searching == false
-                                              ? _medocList.length
-                                              : _medocsSeachingList.length,
-                                          itemBuilder: (BuildContext context,
-                                              int index) {
-                                            if (_searching == false) {
-                                              Medoc medoc = _medocList[index];
-                                              return _buildList(medoc, context);
-                                            } else {
-                                              Pharmacy pharmacy =
-                                                  _pharmacyList[index];
-                                              return _pharmacyBuildList(
-                                                  pharmacy, context);
-                                            }
-                                          },
-                                        ),
-                                      )
-                                    : Container(
-                                        padding: const EdgeInsets.only(
-                                            top: 10, bottom: 100),
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        // width: double.infinity,
-                                        child: const Center(
-                                          child: Text(
-                                            "Pas encore de médicaments",
-                                            style: TextStyle(
-                                              fontSize: 14.0,
+        body: FutureBuilder(
+          future: _initMedocData,
+          builder: (_, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return RefreshIndicator(
+                key: refreshkey,
+                backgroundColor: Colors.white,
+                color: blue10,
+                onRefresh: () => _refreshMedocs(context),
+                child: _loader
+                    ? spinkit
+                    : SingleChildScrollView(
+                        physics: const ScrollPhysics(),
+                        child: Column(
+                          children: [
+                            _search(context),
+                            // color: liteGray,
+                            Stack(
+                              children: <Widget>[
+                                Container(
+                                  // padding: EdgeInsets.only(top: 8),
+                                  height: MediaQuery.of(context).size.height,
+                                  width: double.infinity,
+                                  child: (_searching == false &&
+                                              _medocList.isNotEmpty) ||
+                                          (_searching == true &&
+                                              _medocsSeachingList.isNotEmpty)
+                                      ? Container(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, bottom: 190),
+                                          height: MediaQuery.of(context)
+                                              .size
+                                              .height,
+                                          child: ListView.builder(
+                                            itemCount: _searching == false
+                                                ? _medocList.length
+                                                : _medocsSeachingList.length,
+                                            itemBuilder: (BuildContext context,
+                                                int index) {
+                                              if (_searching == false) {
+                                                Medoc medoc = _medocList[index];
+                                                return _buildList(
+                                                    medoc, context);
+                                              } else {
+                                                Pharmacy pharmacy =
+                                                    _pharmacyList[index];
+                                                return _pharmacyBuildList(
+                                                    pharmacy, context);
+                                              }
+                                            },
+                                          ),
+                                        )
+                                      : Container(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, bottom: 100),
+                                          height: MediaQuery.of(context)
+                                              .size
+                                              .height,
+                                          // width: double.infinity,
+                                          child: const Center(
+                                            child: Text(
+                                              "Pas encore de médicaments",
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-            );
-          } else {
-            return Center(
-              child: spinkit,
-            );
-          }
-        },
+              );
+            } else {
+              return Center(
+                child: spinkit,
+              );
+            }
+          },
+        ),
       ),
     );
   }
@@ -293,7 +301,7 @@ class _MedocsListPageState extends State<MedocsListPage> {
           const EdgeInsets.only(top: 5.0, bottom: 5.0, left: 8.0, right: 8.0),
       child: InkWell(
         onTap: () async {
-          _pharmacyList = await MedocService().getPharmacies(medoc.id);
+          /* _pharmacyList = await MedocService().getPharmacies(medoc.id);
           // setState(() {
 
           // });
@@ -386,7 +394,7 @@ class _MedocsListPageState extends State<MedocsListPage> {
                 ),
               );
             },
-          );
+          ); */
         },
         child: Padding(
           padding: const EdgeInsets.all(8.0),

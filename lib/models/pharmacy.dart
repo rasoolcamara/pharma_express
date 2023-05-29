@@ -9,6 +9,7 @@ class Pharmacy {
   String avatar;
   num latitude;
   num longitude;
+  int garden;
 
   Pharmacy({
     required this.id,
@@ -21,6 +22,7 @@ class Pharmacy {
     required this.longitude,
     required this.latitude,
     required this.status,
+    required this.garden,
   });
 
   factory Pharmacy.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,7 @@ class Pharmacy {
       images: [], // json['images'] as List<String>,
       latitude: num.parse(json['latitude']!),
       longitude: num.parse(json['longitude']!),
+      garden: int.parse(json['ouvert']!),
     );
   }
 }

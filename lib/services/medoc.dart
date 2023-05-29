@@ -92,6 +92,7 @@ class MedocService {
           images: [], // json['images'] as List<String>,
           latitude: num.parse(json['latitude']!),
           longitude: num.parse(json['longitude']!),
+          garden: int.parse(json['ouvert']!),
         ));
       }
     }
